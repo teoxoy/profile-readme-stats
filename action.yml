@@ -1,0 +1,20 @@
+name: 'Profile Readme Stats'
+description: 'Showcase your github stats on your profile README.md'
+inputs:
+  token:
+    description: 'Personal access token with `read:user` scope and optional `repo` scope'
+    required: true
+  template:
+    description: 'Path to template file'
+    required: true
+    default: './TEMPLATE.md'
+  readme:
+    description: 'Path to generated file'
+    required: true
+    default: './README.md'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+branding:
+  icon: 'align-justify'
+  color: 'blue'
