@@ -1,11 +1,14 @@
 # Profile Readme Stats
 
-This action provides [template strings](#template-strings) that are replaced with their respective values when the action runs
+Showcase your github stats on your profile README.md.
+
+This action provides [template strings](#template-strings) that are replaced with their respective values when the action runs.
 
 **Example:** [TEMPLATE](./TEMPLATE.md?raw=true) → [README](./OUTPUT.md)
 
 ## Table of contents
 
+<!-- prettier-ignore-start -->
 - [Profile Readme Stats](#profile-readme-stats)
   - [Table of contents](#table-of-contents)
   - [Action Inputs](#action-inputs)
@@ -32,6 +35,7 @@ This action provides [template strings](#template-strings) that are replaced wit
       - [`uri`](#uri)
       - [`max`](#max)
   - [Example Workflow](#example-workflow)
+<!-- prettier-ignore-end -->
 
 ## Action Inputs
 
