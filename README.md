@@ -63,7 +63,7 @@ Path to generated file (default: `./README.md`)
 
 #### `{{ ACCOUNT_AGE }}`
 
-Accunt age in years.
+Account age in years.
 
 #### `{{ ISSUES }}`
 
