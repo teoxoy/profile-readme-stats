@@ -161,7 +161,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Generate README.md
-      uses: teoxoy/profile-readme-stats@master
+      uses: teoxoy/profile-readme-stats@v1
       with:
         token: ${{ secrets.USER_TOKEN }}
     - name: Update README.md
