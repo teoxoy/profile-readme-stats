@@ -213,10 +213,11 @@ function run() {
         const token = core.getInput('token');
         const template = core.getInput('template');
         const readme = core.getInput('readme');
+        const includeForks = core.getInput('includeForks') === 'true';
         const gql = graphql_1.graphql.defaults({
             headers: { authorization: `token ${token}` },
         });
-        const { accountAge, issues, pullRequests, contributionYears, gists, repositories, repositoryNodes, repositoriesContributedTo, stars, } = yield getUserInfo(gql);
+        const { accountAge, issues, pullRequests, contributionYears, gists, repositories, repositoryNodes, repositoriesContributedTo, stars, } = yield getUserInfo(gql, includeForks);
         const totalCommits = yield getTotalCommits(gql, contributionYears);
         let o = yield fs_1.promises.readFile(template, { encoding: 'utf8' });
         o = replaceLanguageTemplate(o, repositoryNodes);
@@ -231,7 +232,7 @@ function run() {
         yield fs_1.promises.writeFile(readme, o);
     });
 }
-function getUserInfo(gql) {
+function getUserInfo(gql, includeForks = false) {
     return __awaiter(this, void 0, void 0, function* () {
         const query = `{
         viewer {
@@ -253,7 +254,7 @@ function getUserInfo(gql) {
                     }
                 }
             }
-            repositories(affiliations: OWNER, isFork: false, first: 100) {
+            repositories(affiliations: OWNER, isFork: ${includeForks}, first: 100) {
                 totalCount
                 nodes {
                     stargazers {
