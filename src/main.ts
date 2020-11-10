@@ -41,7 +41,7 @@ async function run(): Promise<void> {
         repositoryNodes,
         repositoriesContributedTo,
         stars,
-    } = await getUserInfo(gql)
+    } = await getUserInfo(gql, includeForks)
 
     const totalCommits = await getTotalCommits(gql, contributionYears)
 
@@ -82,7 +82,7 @@ interface Repository extends Starrable {
     }
 }
 
-async function getUserInfo(gql: typeof graphql, includeForks: boolean) {
+async function getUserInfo(gql: typeof graphql, includeForks = false) {
     const query = `{
         viewer {
             createdAt
