@@ -25,6 +25,7 @@ async function run(): Promise<void> {
     const token = core.getInput('token')
     const template = core.getInput('template')
     const readme = core.getInput('readme')
+    const includeForks = core.getInput('includeForks')
 
     const gql = graphql.defaults({
         headers: { authorization: `token ${token}` },
@@ -81,7 +82,7 @@ interface Repository extends Starrable {
     }
 }
 
-async function getUserInfo(gql: typeof graphql) {
+async function getUserInfo(gql: typeof graphql, includeForks: boolean) {
     const query = `{
         viewer {
             createdAt
@@ -102,7 +103,7 @@ async function getUserInfo(gql: typeof graphql) {
                     }
                 }
             }
-            repositories(affiliations: OWNER, isFork: false, first: 100) {
+            repositories(affiliations: OWNER, isFork: includeForks, first: 100) {
                 totalCount
                 nodes {
                     stargazers {
