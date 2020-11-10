@@ -25,7 +25,7 @@ async function run(): Promise<void> {
     const token = core.getInput('token')
     const template = core.getInput('template')
     const readme = core.getInput('readme')
-    const includeForks = core.getInput('includeForks')
+    const includeForks = core.getInput('includeForks') === 'true'
 
     const gql = graphql.defaults({
         headers: { authorization: `token ${token}` },
@@ -103,7 +103,7 @@ async function getUserInfo(gql: typeof graphql, includeForks = false) {
                     }
                 }
             }
-            repositories(affiliations: OWNER, isFork: includeForks, first: 100) {
+            repositories(affiliations: OWNER, isFork: ${includeForks}, first: 100) {
                 totalCount
                 nodes {
                     stargazers {
