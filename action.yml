@@ -12,6 +12,10 @@ inputs:
     description: 'Path to generated file'
     required: true
     default: './README.md'
+  includeForks:
+    description: 'Include forked repositories when calculating the stats'
+    required: false
+    default: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

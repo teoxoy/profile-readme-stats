@@ -15,6 +15,7 @@ This action provides [template strings](#template-strings) that are replaced wit
     - [`token`](#token)
     - [`template`](#template)
     - [`readme`](#readme)
+    - [`includeForks`](#includeforks)
   - [Template Strings](#template-strings)
     - [General](#general)
       - [`{{ ACCOUNT_AGE }}`](#-account_age-)
@@ -56,6 +57,10 @@ Path to template file (default: `./TEMPLATE.md`)
 ### `readme`
 
 Path to generated file (default: `./README.md`)
+
+### `includeForks`
+
+Include forked repositories when calculating the stats (default: `false`)
 
 ## Template Strings
 
