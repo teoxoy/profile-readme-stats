@@ -4,7 +4,6 @@ on: # rebuild any PRs and main branch changes
   push:
     branches:
       - master
-      - main
       - 'releases/*'
 
 jobs:
@@ -27,7 +26,6 @@ jobs:
           readme: './OUTPUT.md'
       - name: Check Status
         run: |
-          git pull
           if [[ "$(git status --porcelain)" != "" ]]; then
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
