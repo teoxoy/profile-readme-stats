@@ -158,6 +158,7 @@ on:
   push:
     branches:
       - master
+      - main
 jobs:
   publish:
     runs-on: ubuntu-latest
