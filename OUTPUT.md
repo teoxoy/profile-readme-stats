@@ -6,6 +6,8 @@ Opened **80** issues
 
 Submitted **115** pull requests
 
+Reviewed **75** pull requests
+
 Received **254** stars
 
 Own **13** repositories
