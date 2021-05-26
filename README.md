@@ -21,6 +21,7 @@ This action provides [template strings](#template-strings) that are replaced wit
       - [`{{ ACCOUNT_AGE }}`](#-account_age-)
       - [`{{ ISSUES }}`](#-issues-)
       - [`{{ PULL_REQUESTS }}`](#-pull_requests-)
+      - [`{{ CODE_REVIEWS }}`](#-code_reviews-)
       - [`{{ COMMITS }}`](#-commits-)
       - [`{{ GISTS }}`](#-gists-)
       - [`{{ REPOSITORIES }}`](#-repositories-)
@@ -77,6 +78,10 @@ Total number of opened issues across all repositories.
 #### `{{ PULL_REQUESTS }}`
 
 Total number of opened pull requests across all repositories.
+
+#### `{{ CODE_REVIEWS }}`
+
+Total number of pull requests reviewed across all repositories.
 
 #### `{{ COMMITS }}`
 

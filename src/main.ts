@@ -12,6 +12,7 @@ enum TPL_STR {
     ACCOUNT_AGE = 'ACCOUNT_AGE',
     ISSUES = 'ISSUES',
     PULL_REQUESTS = 'PULL_REQUESTS',
+    CODE_REVIEWS = 'CODE_REVIEWS',
     COMMITS = 'COMMITS',
     GISTS = 'GISTS',
     REPOSITORIES = 'REPOSITORIES',
@@ -44,6 +45,7 @@ async function run(): Promise<void> {
     } = await getUserInfo(gql, includeForks)
 
     const totalCommits = await getTotalCommits(gql, contributionYears)
+    const totalReviews = await getTotalReviews(gql, contributionYears)
 
     let o = await fs.readFile(template, { encoding: 'utf8' })
     o = replaceLanguageTemplate(o, repositoryNodes)
@@ -51,6 +53,7 @@ async function run(): Promise<void> {
     o = replaceStringTemplate(o, TPL_STR.ISSUES, issues)
     o = replaceStringTemplate(o, TPL_STR.PULL_REQUESTS, pullRequests)
     o = replaceStringTemplate(o, TPL_STR.COMMITS, totalCommits)
+    o = replaceStringTemplate(o, TPL_STR.CODE_REVIEWS, totalReviews)
     o = replaceStringTemplate(o, TPL_STR.GISTS, gists)
     o = replaceStringTemplate(o, TPL_STR.REPOSITORIES, repositories)
     o = replaceStringTemplate(
@@ -204,6 +207,28 @@ async function getTotalCommits(
     const result = await gql<Result>(query)
     return Object.keys(result.viewer)
         .map(key => result.viewer[key].totalCommitContributions)
+        .reduce((total, current) => total + current, 0)
+}
+
+async function getTotalReviews(
+    gql: typeof graphql,
+    contributionYears: number[]
+) {
+    let query = '{viewer{'
+    for (const year of contributionYears) {
+        query += `_${year}: contributionsCollection(from: "${getDateTime(
+            year
+        )}") { totalPullRequestReviewContributions }`
+    }
+    query += '}}'
+
+    interface Result {
+        viewer: Record<string, { totalPullRequestReviewContributions: number }>
+    }
+
+    const result = await gql<Result>(query)
+    return Object.keys(result.viewer)
+        .map(key => result.viewer[key].totalPullRequestReviewContributions)
         .reduce((total, current) => total + current, 0)
 }
 
