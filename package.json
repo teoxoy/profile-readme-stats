@@ -7,13 +7,13 @@
         "ci": "yarn format:fix && yarn build"
     },
     "dependencies": {
-        "@actions/core": "^1.2.4",
-        "@octokit/graphql": "^4.5.2"
+        "@actions/core": "^1.3.0",
+        "@octokit/graphql": "^4.6.2"
     },
     "devDependencies": {
-        "@types/node": "^14.0.23",
+        "@types/node": "^15.6.1",
         "@zeit/ncc": "^0.22.3",
-        "prettier": "^2.0.5",
-        "typescript": "^3.9.7"
+        "prettier": "^2.3.0",
+        "typescript": "^4.2.4"
     }
 }
