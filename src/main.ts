@@ -89,7 +89,10 @@ async function getUserInfo(gql: typeof graphql, includeForks = false) {
     const query = `{
         viewer {
             createdAt
-            issues {
+            openIssues: issues(states: OPEN) {
+                totalCount
+            }
+            closedIssues: issues(states: CLOSED) {
                 totalCount
             }
             pullRequests {
@@ -133,7 +136,10 @@ async function getUserInfo(gql: typeof graphql, includeForks = false) {
     interface Result {
         viewer: {
             createdAt: string
-            issues: {
+            openIssues: {
+                totalCount: number
+            }
+            closedIssues: {
                 totalCount: number
             }
             pullRequests: {
@@ -159,7 +165,8 @@ async function getUserInfo(gql: typeof graphql, includeForks = false) {
     const {
         viewer: {
             createdAt,
-            issues,
+            openIssues,
+            closedIssues,
             pullRequests,
             contributionsCollection: { contributionYears },
             gists,
@@ -177,7 +184,7 @@ async function getUserInfo(gql: typeof graphql, includeForks = false) {
 
     return {
         accountAge,
-        issues: issues.totalCount,
+        issues: openIssues.totalCount + closedIssues.totalCount,
         pullRequests: pullRequests.totalCount,
         contributionYears,
         gists: gists.totalCount,
