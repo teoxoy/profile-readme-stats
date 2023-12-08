@@ -171,6 +171,15 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
+    - name: clear README cache
+      run: |
+        if [[ "$(git status --porcelain)" != "" ]]; then
+        git config user.name github-actions[bot]
+        git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+        rm README.md
+        git commit -m "remove README"
+        git push
+        fi
     - name: Generate README.md
       uses: teoxoy/profile-readme-stats@v2
       with:
