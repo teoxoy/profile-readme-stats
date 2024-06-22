@@ -168,11 +168,11 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: Generate README.md
-      uses: teoxoy/profile-readme-stats@v2
+      uses: teoxoy/profile-readme-stats@v3
       with:
         token: ${{ secrets.USER_TOKEN }}
     - name: Update README.md
