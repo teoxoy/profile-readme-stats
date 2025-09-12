@@ -39,16 +39,19 @@ async function run(): Promise<void> {
         contributionYears,
         gists,
         repositories,
-        repositoryNodes,
         repositoriesContributedTo,
         stars,
     } = await getUserInfo(gql, includeForks)
 
     const totalCommits = await getTotalCommits(gql, contributionYears)
     const totalReviews = await getTotalReviews(gql, contributionYears)
+    const repositoryContributions = await getRepositoryContributions(
+        gql,
+        contributionYears
+    )
 
     let o = await fs.readFile(template, { encoding: 'utf8' })
-    o = replaceLanguageTemplate(o, repositoryNodes)
+    o = replaceLanguageTemplate(o, repositoryContributions)
     o = replaceStringTemplate(o, TPL_STR.ACCOUNT_AGE, accountAge)
     o = replaceStringTemplate(o, TPL_STR.ISSUES, issues)
     o = replaceStringTemplate(o, TPL_STR.PULL_REQUESTS, pullRequests)
@@ -72,18 +75,7 @@ interface Starrable {
 }
 
 interface Gist extends Starrable {}
-
-interface Repository extends Starrable {
-    languages: {
-        edges: Array<{
-            size: number
-            node: {
-                color?: string
-                name: string
-            }
-        }>
-    }
-}
+interface Repository extends Starrable {}
 
 async function getUserInfo(gql: typeof graphql, includeForks = false) {
     const query = `{
@@ -111,15 +103,6 @@ async function getUserInfo(gql: typeof graphql, includeForks = false) {
                 nodes {
                     stargazers {
                         totalCount
-                    }
-                    languages(first: 100) {
-                        edges {
-                            size
-                            node {
-                                color
-                                name
-                            }
-                        }
                     }
                 }
             }
@@ -182,10 +165,132 @@ async function getUserInfo(gql: typeof graphql, includeForks = false) {
         contributionYears,
         gists: gists.totalCount,
         repositories: repositories.totalCount,
-        repositoryNodes: repositories.nodes,
         repositoriesContributedTo: repositoriesContributedTo.totalCount,
         stars,
     }
+}
+
+async function getRepositoryContributions(
+    gql: typeof graphql,
+    contributionYears: number[]
+) {
+    // Get all repositories the user has contributed to along with commit contributions
+    let query = '{viewer{'
+    for (const year of contributionYears) {
+        query += `_${year}: contributionsCollection(from: "${getDateTime(
+            year
+        )}", to: "${getDateTime(year + 1)}") {
+            commitContributionsByRepository(maxRepositories: 100) {
+                repository {
+                    name
+                    owner {
+                        login
+                    }
+                    defaultBranchRef {
+                        target {
+                            ... on Commit {
+                                history {
+                                    totalCount
+                                }
+                            }
+                        }
+                    }
+                    languages(first: 100) {
+                        edges {
+                            size
+                            node {
+                                color
+                                name
+                            }
+                        }
+                    }
+                }
+                contributions(first: 1) {
+                    totalCount
+                }
+            }
+        }`
+    }
+    query += '}}'
+
+    interface ContributionResult {
+        viewer: Record<
+            string,
+            {
+                commitContributionsByRepository: Array<{
+                    repository: {
+                        name: string
+                        owner: {
+                            login: string
+                        }
+                        defaultBranchRef: {
+                            target: {
+                                history: {
+                                    totalCount: number
+                                }
+                            }
+                        } | null
+                        languages: {
+                            edges: Array<{
+                                size: number
+                                node: {
+                                    color?: string
+                                    name: string
+                                }
+                            }>
+                        }
+                    }
+                    contributions: {
+                        totalCount: number
+                    }
+                }>
+            }
+        >
+    }
+
+    const contributionResult = await gql<ContributionResult>(query)
+
+    // Aggregate contributions by repository across all years
+    const repoCommitMap = new Map<
+        string,
+        {
+            repository: ContributionResult['viewer'][string]['commitContributionsByRepository'][0]['repository']
+            userCommits: number
+            totalRepoCommits: number
+            commitRatio: number
+        }
+    >()
+
+    Object.keys(contributionResult.viewer).forEach(key => {
+        const yearContributions =
+            contributionResult.viewer[key].commitContributionsByRepository
+        yearContributions.forEach(contrib => {
+            const repoKey = `${contrib.repository.owner.login}/${contrib.repository.name}`
+            const totalRepoCommits =
+                contrib.repository.defaultBranchRef?.target.history
+                    .totalCount || 1
+            const existing = repoCommitMap.get(repoKey)
+
+            if (existing) {
+                existing.userCommits += contrib.contributions.totalCount
+                existing.commitRatio =
+                    existing.userCommits / existing.totalRepoCommits
+            } else {
+                const userCommits = contrib.contributions.totalCount
+                const commitRatio = userCommits / totalRepoCommits
+                repoCommitMap.set(repoKey, {
+                    repository: contrib.repository,
+                    userCommits,
+                    totalRepoCommits,
+                    commitRatio,
+                })
+            }
+        })
+    })
+
+    return Array.from(repoCommitMap.values()).filter(
+        repo => repo.userCommits > 0
+    )
 }
 
 async function getTotalCommits(
@@ -267,7 +372,34 @@ function replaceStringTemplate(
     )
 }
 
-function replaceLanguageTemplate(input: string, repositories: Repository[]) {
+function replaceLanguageTemplate(
+    input: string,
+    repositoryContributions: Array<{
+        repository: {
+            name: string
+            owner: { login: string }
+            defaultBranchRef: {
+                target: {
+                    history: {
+                        totalCount: number
+                    }
+                }
+            } | null
+            languages: {
+                edges: Array<{
+                    size: number
+                    node: {
+                        color?: string
+                        name: string
+                    }
+                }>
+            }
+        }
+        userCommits: number
+        totalRepoCommits: number
+        commitRatio: number
+    }>
+) {
     const rStart = buildRegex(TPL_STR.LANGUAGE_TEMPLATE_START, true)
     const rEnd = buildRegex(TPL_STR.LANGUAGE_TEMPLATE_END, true)
 
@@ -281,7 +413,7 @@ function replaceLanguageTemplate(input: string, repositories: Repository[]) {
         const endMatch = s.search(rEnd)
         if (endMatch === -1) continue
         const str = s.substring(0, endMatch)
-        const replacement = getLanguages(repositories, max)
+        const replacement = getLanguages(repositoryContributions, max)
             .map(lang => {
                 let res = str
                 res = replaceStringTemplate(
@@ -321,39 +453,92 @@ function replaceLanguageTemplate(input: string, repositories: Repository[]) {
     return output
 }
 
-function getLanguages(repositories: Repository[], max: number) {
+function getLanguages(
+    repositoryContributions: Array<{
+        repository: {
+            name: string
+            owner: { login: string }
+            defaultBranchRef: {
+                target: {
+                    history: {
+                        totalCount: number
+                    }
+                }
+            } | null
+            languages: {
+                edges: Array<{
+                    size: number
+                    node: {
+                        color?: string
+                        name: string
+                    }
+                }>
+            }
+        }
+        userCommits: number
+        totalRepoCommits: number
+        commitRatio: number
+    }>,
+    max: number
+) {
     interface Language {
         name: string
-        size: number
+        weightedSize: number
         percent: number
         color: string
     }
 
     const languages = new Map<string, Language>()
 
-    for (const repo of repositories) {
+    core.debug(`repo count: ${repositoryContributions.length}`)
+    for (const repoContrib of repositoryContributions) {
+        const repo = repoContrib.repository
+        const userCommits = repoContrib.userCommits
+        const commitRatio = repoContrib.commitRatio
+        core.debug(
+            `${repo.owner.login}/${repo.name} (${userCommits} user commits, ${
+                repoContrib.totalRepoCommits
+            } total commits, ${(commitRatio * 100).toFixed(1)}% ratio)`
+        )
+
         for (const lang of repo.languages.edges) {
+            // Weight the language size by commit ratio for accurate representation
+            // This gives higher weight to languages in repos where user has higher contribution percentage
+            const weightedSize = lang.size * commitRatio
+            core.debug(
+                `${lang.node.name} (${lang.size} bytes * ${commitRatio.toFixed(
+                    6
+                )} ratio = ${weightedSize.toFixed(0)} weighted)`
+            )
+
             const existing = languages.get(lang.node.name)
             if (existing) {
-                existing.size += lang.size
+                existing.weightedSize += weightedSize
             } else {
                 languages.set(lang.node.name, {
                     name: lang.node.name,
-                    size: lang.size,
+                    weightedSize: weightedSize,
                     percent: 0,
                     color: lang.node.color || '#ededed',
                 })
             }
         }
+        core.debug('')
     }
 
-    const langs = [...languages.values()].sort((a, b) => b.size - a.size)
-    const totalSize = langs.reduce((acc, lang) => acc + lang.size, 0)
+    const langs = [...languages.values()].sort(
+        (a, b) => b.weightedSize - a.weightedSize
+    )
+    const totalWeightedSize = langs.reduce(
+        (acc, lang) => acc + lang.weightedSize,
+        0
+    )
     /** rounds x to 1 decimal place */
     const round = (x: number) => Math.floor(x * 10) / 10
-    const getPercent = (size: number) => round((size / totalSize) * 100)
+    const getPercent = (weightedSize: number) =>
+        round((weightedSize / totalWeightedSize) * 100)
     for (const lang of langs) {
-        lang.percent = getPercent(lang.size)
+        lang.percent = getPercent(lang.weightedSize)
     }
 
     let maxLanguages = max
@@ -366,15 +551,15 @@ function getLanguages(repositories: Repository[], max: number) {
 
     // aggregate removed languages under 'Other'
     if (maxLanguages < langs.length) {
-        const size = langs
+        const weightedSize = langs
             .splice(maxLanguages - 1)
-            .reduce((acc, lang) => acc + lang.size, 0)
-        const percent = getPercent(size)
+            .reduce((acc, lang) => acc + lang.weightedSize, 0)
+        const percent = getPercent(weightedSize)
 
         if (percent !== 0) {
             langs.push({
                 name: 'Other',
-                size,
+                weightedSize,
                 percent,
                 color: '#ededed',
             })

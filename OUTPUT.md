@@ -1,33 +1,31 @@
-Account age: **7** years
+Account age: **9** years
 
-Pushed **2807** commits
+Pushed **8408** commits
 
-Opened **211** issues
+Opened **5** issues
 
-Submitted **323** pull requests
+Submitted **945** pull requests
 
-Reviewed **554** pull requests
+Reviewed **124** pull requests
 
-Received **883** stars
+Received **0** stars
 
-Own **11** repositories
+Own **5** repositories
 
-Contributed to **10** public repositories
+Contributed to **54** public repositories
 
 Top 8 most used languages across your repositories:
 
-![TypeScript](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%233178c6&message=TypeScript%EF%B8%B164.7%25)
-![Rust](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23dea584&message=Rust%EF%B8%B117.4%25)
-![Julia](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23a270ba&message=Julia%EF%B8%B18.8%25)
-![JavaScript](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23f1e05a&message=JavaScript%EF%B8%B12.8%25)
-![HTML](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23e34c26&message=HTML%EF%B8%B11.9%25)
-![Lua](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23000080&message=Lua%EF%B8%B11.7%25)
-![CSS](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23563d7c&message=CSS%EF%B8%B11.1%25)
-![Other](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23ededed&message=Other%EF%B8%B11.2%25)
+![C#](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23178600&message=C%23%EF%B8%B195.9%25)
+![JavaScript](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23f1e05a&message=JavaScript%EF%B8%B11.9%25)
+![Shell](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%2389e051&message=Shell%EF%B8%B10.7%25)
+![Python](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%233572A5&message=Python%EF%B8%B10.6%25)
+![HTML](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23e34c26&message=HTML%EF%B8%B10.5%25)
+![Dockerfile](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23384d54&message=Dockerfile%EF%B8%B10.1%25)
 
 Top 4 most used languages across your repositories:
 
-![TypeScript](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%233178c6&message=TypeScript%EF%B8%B164.7%25)
-![Rust](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23dea584&message=Rust%EF%B8%B117.4%25)
-![Julia](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23a270ba&message=Julia%EF%B8%B18.8%25)
-![Other](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23ededed&message=Other%EF%B8%B18.9%25)
+![C#](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23178600&message=C%23%EF%B8%B195.9%25)
+![JavaScript](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23f1e05a&message=JavaScript%EF%B8%B11.9%25)
+![Shell](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%2389e051&message=Shell%EF%B8%B10.7%25)
+![Other](https://img.shields.io/static/v1?style=flat-square&label=%E2%A0%80&color=555&labelColor=%23ededed&message=Other%EF%B8%B11.3%25)
